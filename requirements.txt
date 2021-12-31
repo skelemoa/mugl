@@ -1,0 +1,5 @@
+pytorch=1.5.1
+h5py=2.10.0
+numpy=1.18.4
+matplotlib=3.2.1
+ipyvolume=0.5.2

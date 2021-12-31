@@ -1,0 +1,120 @@
+0: drink water
+1: eat meal
+2: brush teeth
+3: brush hair
+4: drop
+5: pick up
+6: throw
+7: sit down
+8: stand up
+9: clapping
+10: reading
+11: writing
+12: tear up paper
+13: put on jacket
+14: put on glasses
+15: take off jacket
+16: put on a shoe
+17: hopping
+18: falling down
+19: pushing
+20: take off a shoe
+21: take off glasses
+22: put on a hat_cap
+23: take off a hat_cap
+24: cheer up
+25: hand waving
+26: reach into pocket
+27: jump up
+28: phone call
+29: play with phone_tablet
+30: type on a keyboard
+31: point to something
+32: taking a selfie
+33: check time (from watch)
+34: rub two hands
+35: nod head_bow
+36: shake head
+37: wipe face
+38: salute
+39: put palms together
+40: cross hands in front
+41: sneeze_cough
+42: staggering
+43: headache
+44: chest pain
+45: back pain
+46: neck pain
+47: nausea_vomiting
+48: fan self
+49: punch_slap
+50: pat on back
+51: point finger
+52: hugging
+53: giving object
+54: touch pocket
+55: shaking hands
+56: kicking something
+57: kicking
+58: walking towards
+59: walking apart
+60: put on headphone
+61: take off headphone
+62: shoot at basket
+63: bounce ball
+64: tennis bat swing
+65: juggle table tennis ball
+66: hush
+67: flick hair
+68: thumb up
+69: thumb down
+70: make OK sign
+71: make victory sign
+72: staple book
+73: counting money
+74: cutting nails
+75: cutting paper
+76: snap fingers
+77: open bottle
+78: sniff_smell
+79: squat down
+80: toss a coin
+81: fold paper
+82: ball up paper
+83: play magic cube
+84: apply cream on face
+85: apply cream on hand
+86: put on bag
+87: take off bag
+88: put object into bag
+89: take object out of  bag
+90: open a box
+91: move heavy objects
+92: shake fist
+93: throw up cap_hat
+94: capitulate
+95: cross arms
+96: arm circles
+97: arm swings
+98: run on the spot
+99: butt kicks
+100: cross toe touch
+101: side kick
+102: yawn
+103: stretch oneself
+104: blow nose
+105: hit with object
+106: wield knife
+107: knock over
+108: grab stuff
+109: shoot with gun
+110: step on foot
+111: high-five
+112: cheers and drink
+113: carry object
+114: take a photo
+115: follow
+116: whisper
+117: exchange things
+118: support somebody
+119: rock-paper-scissors

@@ -1,0 +1,9 @@
+Data preprocessing steps
+
+1. quaternion1.py (creates npy from vibe)
+2. make_dataset2persons.py (creates h5 file)
+3. txt2npy.py (Kinect skeleton files to npy)
+4. map_root.py (Extracts root)
+5. preprocessing2person.py (Makes single dataset by combining all those/creates mask)
+6. get_seq_len.py (generates sequnce length mask)
+7. make_subset_2_person.py (Oversampling/select classes)
