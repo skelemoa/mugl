@@ -1,5 +1,5 @@
 # MUGL
-The official pytorch implementation of **MUGL: Large Scale Multi Person Conditional Action Generation with Locomotion**, [WACV 2022](https://wacv2022.thecvf.com/home).
+The official pytorch implementation of [**MUGL: Large Scale Multi Person Conditional Action Generation with Locomotion**](https://arxiv.org/abs/2110.11460), [WACV 2022](https://wacv2022.thecvf.com/home).
 Please visit our [**webpage**](https://skeleton.iiit.ac.in/mugl) for more details.
 
 <img src = "diagrams/generations1.gif" />
