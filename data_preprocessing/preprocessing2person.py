@@ -1,7 +1,7 @@
 import numpy as np
 import h5py as h5
 import os
-from scipy.spatial.transform import Rotation as R
+# from scipy.spatial.transform import Rotation as R
 import torch
 
 

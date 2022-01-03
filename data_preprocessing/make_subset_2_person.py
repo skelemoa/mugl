@@ -77,7 +77,7 @@ leg_mv_cls = [i-1 for i in leg_mv_cls]
 
 # cls_id = np.arange(60)
 
-def select_data(x,y, rot6d, mask, root, seq, oversample=50):
+def select_data(x,y, rot6d, mask, root, seq, mean_pose, oversample=50):
 	data = []
 	label = []
 	mean_list = []
@@ -90,7 +90,7 @@ def select_data(x,y, rot6d, mask, root, seq, oversample=50):
 		idx = np.where(y==i)
 		x1 = x[idx]
 		y1 = y[idx]
-		# mean1 = mean_pose[idx]
+		mean1 = mean_pose[idx]
 		rot6d1 = rot6d[idx]
 		mask1 = mask[idx]
 		root1 = root[idx]
@@ -102,7 +102,7 @@ def select_data(x,y, rot6d, mask, root, seq, oversample=50):
 				for OS in range(oversample):
 					# data.append(x1[j])
 					label.append(p)
-					# mean_list.append(mean1[j])
+					mean_list.append(mean1[j])
 					rot6d_list.append(rot6d1[j])
 					mask_list.append(mask1[j])
 					root_list.append(root1[j])
@@ -110,7 +110,7 @@ def select_data(x,y, rot6d, mask, root, seq, oversample=50):
 			else:
 				# data.append(x1[j])
 				label.append(p)
-				# mean_list.append(mean1[j])
+				mean_list.append(mean1[j])
 				rot6d_list.append(rot6d1[j])
 				mask_list.append(mask1[j])
 				root_list.append(root1[j])
@@ -119,7 +119,7 @@ def select_data(x,y, rot6d, mask, root, seq, oversample=50):
 	# data = np.array(data)
 	label = np.array(label)
 	print('label array created')
-	# mean_list = np.array(mean_list)
+	mean_list = np.array(mean_list)
 	rot6d_list = np.array(rot6d_list)
 	print('Rotation array created')
 	mask_list = np.array(mask_list)
@@ -171,8 +171,8 @@ def select_data(x,y, rot6d, mask, root, seq, oversample=50):
 	# 				mask_list[i,t:,:] = mask_list[i,:(T-t),:]
 
 
-	print(y.shape, rot6d_list.shape, mask_list.shape, root_list.shape, seq_list.shape)
-	return y, rot6d_list, mask_list, root_list, seq_list
+	print(y.shape, rot6d_list.shape, mask_list.shape, root_list.shape, seq_list.shape, mean_list.shape)
+	return y, rot6d_list, mask_list, root_list, seq_list, mean_list
 
 
 
@@ -183,7 +183,7 @@ if __name__ == '__main__':
 	f2 = h5py.File(os.path.join(dir, 'Sequence_120.h5'), 'r')
 	x = f['x'][:]
 	y = f['y'][:] -1 
-	# mean_pose = f['mean_pose'][:]
+	mean_pose = f['mean_pose'][:][:,0,:]
 	rot6d = f['rot6d'][:]
 	# camera = f['camera'][:]
 	# euler = f['euler'][:]
@@ -197,7 +197,7 @@ if __name__ == '__main__':
 	# mean_pose = mean_pose[:,::4,:]
 	mask = mask[:,::4,:]
 	train_root = train_root[:,::4,:]
-	print(x.shape,y.shape, rot6d.shape, mask.shape, seq.shape)
+	print(x.shape,y.shape, rot6d.shape, mask.shape, seq.shape, mean_pose.shape)
 
 
 	# test_x = f['test_x'][:]
@@ -225,15 +225,15 @@ if __name__ == '__main__':
 	# test_root = test_root[15000: 25000]
 
 
-	y,rot6d,mask,train_root, train_seq = select_data(x,y, rot6d, mask, train_root, seq)
-	# test_x,test_y,test_rot6d,test_mask,test_root, test_seq = select_data(test_x,test_y, test_rot6d, test_mask,test_root, test_seq,oversample=1)
+	y,rot6d,mask,train_root, train_seq, mean_pose = select_data(x,y, rot6d, mask, train_root, seq, mean_pose)
+	# test_x,test_y,test_rot6d,test_mask,test_root, test_seq, test_mean_pose = select_data(test_x,test_y, test_rot6d, test_mask,test_root, test_seq, test_mean_pose,oversample=1)
 
 	f = h5py.File(os.path.join(dir,'NTU_oversample_120_256.h5'), 'w')
 	# f.create_dataset('x', data=x)
 	# f.create_dataset('test_x', data=test_x)
 	f.create_dataset('y', data=y)
 	# f.create_dataset('test_y', data=test_y)
-	# f.create_dataset('mean_pose', data=mean_pose)
+	f.create_dataset('mean_pose', data=mean_pose)
 	# f.create_dataset('test_mean_pose', data=test_mean_pose)
 	f.create_dataset('rot6d', data=rot6d)
 	# f.create_dataset('test_rot6d', data=test_rot6d)

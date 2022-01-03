@@ -16,12 +16,12 @@ file_list = []
 
 person_2 = []
 
-main_path = '../dataset/'
+main_path = '../dataset'
 cls_id = np.arange(1, 121)
 # person_2_cls = [50,51,52,53,54,55,56,57,58,59,60]
 person_2_cls = [50,51,52,53,54,55,56,57,58,59,60,106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120]
 index = np.load(main_path + '/files_256/index.npy')
-for jj in range(1,33):
+for jj in index:
 
     X = np.load(main_path + '/files_256/X_{}.npy'.format(jj))
     Y = np.load(main_path + '/files_256/Y_{}.npy'.format(jj))
@@ -56,6 +56,7 @@ for jj in range(1,33):
             continue
 
         if Y[idx][0] not in person_2_cls:
+            # single person class
             data = np.zeros((256, 144))
             mean = np.zeros((256, 144))
             rot = np.zeros((256, 144*2))
@@ -100,8 +101,8 @@ for jj in range(1,33):
             file_list.append(file[idx])
             bbox_list.append(b)
         else:
+            # two person class
             t = seq_len[idx]
-
             data = np.zeros((256, 144))
             mean = np.zeros((256, 144))
             rot = np.zeros((256, 144*2))
@@ -117,6 +118,7 @@ for jj in range(1,33):
                 b[:t[0], :4] = bbox[idx][0,:t[0]]
                 b[:t[1], 4:] = bbox[idx][1,:t[1]]
             else:
+                # if either of ther persons is missing
                 data[:t[0], :72] = X[idx][0, :t[0],:] # person 1
                 data[:t[0], 72:] = X[idx][0, :t[0],:] # person 2
                 mean[:t[0], :72] = meanpose[idx][0, :t[0],:]
@@ -127,7 +129,7 @@ for jj in range(1,33):
                 b[:t[0], 4:] = bbox[idx][0,:t[0]]
 
             data_list.append(data)
-            # mean_list.append(mean)
+            mean_list.append(mean)
             rot6d_list.append(rot)
             labels.append(Y[idx][0])
             cam_list.append(camera[idx][0])
@@ -140,7 +142,7 @@ for jj in range(1,33):
 
 print('Creating Array')
 data_list = np.array(data_list)
-# mean_list = np.array(mean_list)
+mean_list = np.array(mean_list)
 labels = np.array(labels)
 setup_list = np.array(setup_list)
 rot6d_list = np.array(rot6d_list)
@@ -160,7 +162,7 @@ np.save(main_path + '/data/Train_File_order.npy', file_list[train_idx])
 np.save(main_path + '/data/Test_File_order.npy', file_list[test_idx])
 
 print(data_list.shape, labels.shape, setup_list.shape, rot6d_list.shape)
-# print('labels', labels)
+
 print('Creating Dataset')
 f = h5py.File(main_path + '/data/NTU_VIBE_CSet_120.h5', 'w')
 f.create_dataset('x', data=data_list[train_idx])
@@ -169,7 +171,7 @@ print('X saved')
 f.create_dataset('y', data=labels[train_idx])
 # f.create_dataset('test_y', data=labels[test_idx])
 print('Y saved')
-# f.create_dataset('mean_pose', data=mean_list[train_idx])
+f.create_dataset('mean_pose', data=mean_list[train_idx])
 # f.create_dataset('test_mean_pose', data=mean_list[test_idx])
 f.create_dataset('rot6d', data=rot6d_list[train_idx])
 # f.create_dataset('test_rot6d', data=rot6d_list[test_idx])

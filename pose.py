@@ -71,8 +71,12 @@ max_epochs = 200
 H_size = 100
 latent_dim = 352
 num_workers = 10
+# hyper-parameters
 lambda1 = 10
 lambda2 = 0.1
+lambda3 = 10
+lambda4 = 30
+lambda5 = 2
 device = torch.device('cuda:0')
 load_epoch = -1
 num_class = 120
@@ -86,16 +90,9 @@ def train(epoch, model, loader, optim, L1Loss, L):
 	loss_kld = 0
 	loss_seq = 0
 	total_root_loss = 0
-	# if epoch > 0:
-	# 	lambda2 = 0.1
-	# if epoch > 130:
-	# 	lambda2 = 0.1
-	for i, (rot6d, mask, y, root, seq) in enumerate(loader):
+
+	for i, (rot6d, mask, y, root, seq, mean_pose) in enumerate(loader):
 		lambda2 = L[i] # cyclic annealing schedule
-		# skip = 4
-		# x = x[:,::skip,:]
-		# rot6d = rot6d[:,::skip,:]
-		# mask = mask[:,::skip,:]
 		leg_mask = torch.zeros(y.shape)
 		for idx, p in enumerate(y):
 			if p in leg_cls:
@@ -105,27 +102,28 @@ def train(epoch, model, loader, optim, L1Loss, L):
 		label[np.arange(y.shape[0]), y] = 1
 		label = torch.tensor(label)
 
-
 		optim.zero_grad()
 		rot = rot6d[:,0,:].reshape((rot6d.shape[0], 48, 6))
 		rot = rot[:,0,:]
 
 		pred, kld, root_pred, seq_pred = model(rot6d.to(device), label.to(device), rot.to(device), root.to(device), seq.to(device).float())
-		pred_3d1 = fkt(pred[:,:,:144].contiguous(), skeleton, device, parent_array)
-		pred_3d2 = fkt(pred[:,:,144:].contiguous(), skeleton, device, parent_array)
+		
+		skeleton1 = mean_pose[:,:72].reshape((mean_pose.shape[0], 24, 3))
+		skeleton2 = mean_pose[:,72:].reshape((mean_pose.shape[0], 24, 3))
 
-		x1 = fkt(rot6d[:,:,:144].to(device).contiguous(), skeleton, device, parent_array)
-		x2 = fkt(rot6d[:,:,144:].to(device).contiguous(), skeleton, device, parent_array)
+		pred_3d1 = fkt(pred[:,:,:144].contiguous(), skeleton1, device, parent_array)
+		pred_3d2 = fkt(pred[:,:,144:].contiguous(), skeleton2, device, parent_array)
+
+		x1 = fkt(rot6d[:,:,:144].to(device).contiguous(), skeleton1, device, parent_array)
+		x2 = fkt(rot6d[:,:,144:].to(device).contiguous(), skeleton2, device, parent_array)
 		x = torch.zeros((x1.shape[0], x1.shape[1], x1.shape[2]*2))
 		x[:,:,:72] = x1
 		x[:,:,72:] = x2
 
-		# maeloss_3d = L1Loss(pred_3d, x.to(device))
-		# maeloss_6d = L1Loss(pred, rot6d.to(device))
 		seq_loss = L1Loss(seq.to(device).float(), seq_pred)
 		maeloss_3d, maeloss_6d, leg_6d, root_loss = loss_function(x, pred, mask, pred_3d1, pred_3d2, rot6d, leg_mask.to(device), root.to(device), root_pred, device) 
 		# Experiment 2: leg loss hyper-parameter: 30
-		loss = 10*(maeloss_3d + lambda1*maeloss_6d + 30*leg_6d) + lambda2*kld + root_loss + 2*seq_loss
+		loss = lambda3*(maeloss_3d + lambda1*maeloss_6d + lambda4*leg_6d) + lambda2*kld + root_loss + lambda5*seq_loss
 		loss.backward()
 		optim.step()
 		total_loss += loss.cpu().data.numpy()*x.shape[0]

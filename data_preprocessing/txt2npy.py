@@ -8,10 +8,10 @@ import os
 import sys 
 import traceback  
 
-main_path = '../dataset/'
+main_path = '../dataset'
 user_name = 'user'
-save_npy_path = main_path + '/kinect/'
-load_txt_path = main_path + '/nturgbd_skeletons_s001_to_s017/'
+save_npy_path = os.path.join(main_path, 'kinect/')
+load_txt_path = os.path.join(main_path, 'nturgbd_skeletons_s001_to_s017/')
 missing_file_path = './samples_with_missing_skeletons.txt'
 step_ranges = list(range(0,100)) # just parse range, for the purpose of paralle running. 
 

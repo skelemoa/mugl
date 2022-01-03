@@ -9,7 +9,7 @@ import time
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-main_path = '../dataset/'
+main_path = '../dataset'
 orig_joints = [] # Original location of the joints of the smpl model 
 
 

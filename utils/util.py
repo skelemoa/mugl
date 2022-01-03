@@ -10,12 +10,13 @@ from rotation.rotation import rot6d_to_rotmat, batch_rigid_transform
 
 
 class NTUDataset(Dataset):
-    def __init__(self,rot6d,mask, y, root, seq):
+    def __init__(self,rot6d,mask, y, root, seq, mean_pose):
         # self.x = x[:,:,:]
         self.rot6d = rot6d[:,:,:]
         self.y = y
         self.mask = mask[:,:,:]
         self.root = root[:,:,:,:]
+        self.mean_pose = mean_pose
         self.res1 = self.root[:,:,1,:] - self.root[:,:,0,:]
         self.res2 = self.root[:,:,0,:] - np.zeros((self.root[:,:,0,:].shape))
 
@@ -34,7 +35,7 @@ class NTUDataset(Dataset):
         return self.N
 
     def __getitem__(self, index):
-        return [self.rot6d[index], self.mask[index], self.y[index], self.residual[index], self.seq[index]]
+        return [self.rot6d[index], self.mask[index], self.y[index], self.residual[index], self.seq[index], self.mean_pose[index]]
 
 
 
@@ -57,7 +58,7 @@ def fkt(x, mean_pose, device, parent_array):
 	# forward kinematics
 	rotmat = rot6d_to_rotmat(x)
 	# same mean pose across timesteps
-	mean_pose = torch.tensor(mean_pose.reshape((1, -1)))
+	mean_pose = torch.tensor(mean_pose.reshape((x.shape[0],1, -1)))
 	mean_pose = mean_pose.expand((x.shape[0], x.shape[1], 72))
 	mean_pose = mean_pose[:,:,:].reshape((x.shape[0]*x.shape[1],-1,3))
 	rotmat = rotmat.reshape((x.shape[0]*x.shape[1],-1, 3, 3))
@@ -184,20 +185,20 @@ def plot(y, epoch,X,pred):
 
 def get_datasets(main_path, batch_size, num_workers):
     datadir = os.path.join(main_path,'data')
-    path = os.path.join(datadir, 'NTU_120_256.h5')
+    path = os.path.join(datadir, 'NTU_oversample_120_256.h5')
     f = h5py.File(path, 'r')
 
     ### selecting only kicking class
     # x = f['x'][:]
     rot6d = f['rot6d'][:]
-    # mean_pose = f['mean_pose'][:]
+    mean_pose = f['mean_pose'][:]
     mask = f['mask'][:]
     y = np.argmax(f['y'][:], axis=1)
     root = f['root'][:]
     seq = f['seq'][:]
 
 
-    train_dataset = NTUDataset(rot6d,mask, y, root, seq)
+    train_dataset = NTUDataset(rot6d,mask, y, root, seq, mean_pose)
     print(f"Train Dataset Loaded {train_dataset.N} samples")
     
     # test_x = f['test_x'][:]
